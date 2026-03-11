@@ -157,10 +157,9 @@ const Login = () => {
         <FlipCard3D isLoginPage={isLoginPage}>
           <div className="w-full h-full">
             <div
-              className="absolute w-full pt-10 pb-2 pl-10 pr-10 border shadow-xl backdrop-blur-sm rounded-2xl border-border-button"
+              className="absolute w-full pt-10 pb-2 pl-10 pr-10 border shadow-xl backdrop-blur-sm rounded-2xl border-border-button bg-bg-base text-text-primary"
               style={{
                 width: '480px',
-                background: '#fff',
                 height: '550px',
                 boxSizing: 'border-box',
                 top: '28%',
@@ -168,7 +167,7 @@ const Login = () => {
               }}
             >
               <div className="mb-8 text-center">
-                <h2 className="text-xl font-semibold" style={{ color: '#333' }}>
+                <h2 className="text-xl font-semibold text-text-primary">
                   {title === 'login' ? t('loginTitle') : t('signUpTitle')}
                 </h2>
               </div>

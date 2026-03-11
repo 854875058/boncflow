@@ -21,7 +21,7 @@ function BannerCard() {
 
 export function Banner() {
   return (
-    <section className="bg-[url('@/assets/banner.png')] bg-cover h-28 rounded-2xl  my-8 flex gap-8 justify-between">
+    <section className="bg-[url('@/assets/banner.png')] bg-cover h-28 rounded-2xl my-8 flex gap-8 justify-between text-text-primary dark:text-text-primary-inverse">
       <div className="h-full text-3xl font-bold items-center inline-flex ml-6">
         Welcome to {BrandName}
       </div>
@@ -31,9 +31,9 @@ export function Banner() {
         <BannerCard></BannerCard>
         <button
           type="button"
-          className="relative p-1 hover:bg-white/10 rounded-full transition-colors"
+          className="relative p-1 hover:bg-bg-card rounded-full transition-colors"
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-6 h-6 text-current" />
         </button>
       </div>
     </section>

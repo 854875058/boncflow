@@ -80,7 +80,7 @@ export default function SearchingView({
       {/* search header */}
       <div
         className={cn(
-          'relative z-10 px-8 pt-8 flex  text-transparent justify-start items-start w-full',
+          'relative z-10 px-8 pt-8 flex text-text-primary justify-start items-start w-full',
         )}
       >
         <h1

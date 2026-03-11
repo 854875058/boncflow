@@ -205,7 +205,7 @@ const AgentLogPage: React.FC = () => {
   };
 
   return (
-    <div className=" text-white">
+    <div className="text-text-primary">
       <PageHeader>
         <Breadcrumb>
           <BreadcrumbList>
@@ -229,7 +229,7 @@ const AgentLogPage: React.FC = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold mb-4">Log</h1>
 
-          <div className="flex justify-end space-x-2 mb-4 text-foreground">
+          <div className="flex justify-end space-x-2 mb-4 text-text-primary">
             <div className="flex items-center space-x-2">
               <span>ID/Title</span>
               <SearchInput
@@ -249,7 +249,7 @@ const AgentLogPage: React.FC = () => {
             </div>
             <button
               type="button"
-              className="bg-foreground  text-text-title-invert  px-4 py-1 rounded"
+              className="bg-text-primary text-bg-base px-4 py-1 rounded"
               onClick={() => {
                 handleClickSearch();
               }}
@@ -258,7 +258,7 @@ const AgentLogPage: React.FC = () => {
             </button>
             <button
               type="button"
-              className="bg-transparent text-foreground px-4 py-1 rounded border"
+              className="bg-transparent text-text-primary px-4 py-1 rounded border border-border-button hover:bg-bg-card"
               onClick={() => handleReset()}
             >
               Reset

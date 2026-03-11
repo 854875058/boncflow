@@ -28,7 +28,7 @@ export default function SearchPage({
   const { t } = useTranslation();
   return (
     <section className="relative w-full flex transition-all justify-center items-center mt-[15vh]">
-      <div className="relative z-10 px-8 pt-8 flex  text-transparent flex-col justify-center items-center w-[780px]">
+      <div className="relative z-10 px-8 pt-8 flex text-text-primary flex-col justify-center items-center w-[780px]">
         <h1
           className={cn(
             'text-4xl font-bold bg-gradient-to-l from-[#40EBE3] to-[#4A51FF] bg-clip-text',

@@ -395,7 +395,7 @@ const FloatingChatWidget = () => {
 
           {/* Messages and Input */}
           <div
-            className="flex flex-col h-[436px] bg-white"
+            className="flex flex-col h-[436px] bg-bg-base text-text-primary"
             style={{ borderRadius: '0 0 16px 16px' }}
           >
             <div
@@ -430,7 +430,7 @@ const FloatingChatWidget = () => {
                     className={`max-w-[280px] px-4 py-2 rounded-2xl ${
                       message.role === MessageType.User
                         ? 'bg-blue-600 text-white rounded-br-md'
-                        : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                        : 'bg-bg-card text-text-primary rounded-bl-md'
                     }`}
                   >
                     {message.role === MessageType.User ? (
@@ -476,7 +476,7 @@ const FloatingChatWidget = () => {
             </div>
 
             {/* Input Area */}
-            <div className="border-t border-gray-200 p-4">
+            <div className="border-t border-border-button p-4">
               <div className="flex items-end space-x-3">
                 <div className="flex-1">
                   <textarea
@@ -489,7 +489,7 @@ const FloatingChatWidget = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
                     rows={1}
-                    className="w-full resize-none border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                    className="w-full resize-none border border-border-button bg-bg-base rounded-2xl px-4 py-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     style={{ minHeight: '44px', maxHeight: '120px' }}
                     disabled={hasError || sendLoading}
                   />
@@ -566,7 +566,7 @@ const FloatingChatWidget = () => {
           {/* Messages Container */}
           {!isMinimized && (
             <div
-              className="flex flex-col h-[436px] bg-white"
+              className="flex flex-col h-[436px] bg-bg-base text-text-primary"
               style={{ borderRadius: '0 0 16px 16px' }}
             >
               <div
@@ -604,7 +604,7 @@ const FloatingChatWidget = () => {
                       className={`max-w-[280px] px-4 py-2 rounded-2xl ${
                         message.role === MessageType.User
                           ? 'bg-blue-600 text-white rounded-br-md'
-                          : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                          : 'bg-bg-card text-text-primary rounded-bl-md'
                       }`}
                     >
                       {message.role === MessageType.User ? (
@@ -632,7 +632,7 @@ const FloatingChatWidget = () => {
                 {/* Typing Indicator */}
                 {sendLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
+                    <div className="bg-bg-card rounded-2xl rounded-bl-md px-4 py-3">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div
@@ -652,7 +652,7 @@ const FloatingChatWidget = () => {
               </div>
 
               {/* Input Area */}
-              <div className="border-t border-gray-200 p-4">
+              <div className="border-t border-border-button p-4">
                 <div className="flex items-end space-x-3">
                   <div className="flex-1">
                     <textarea
@@ -666,7 +666,7 @@ const FloatingChatWidget = () => {
                       onKeyPress={handleKeyPress}
                       placeholder="Type your message..."
                       rows={1}
-                      className="w-full resize-none border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                      className="w-full resize-none border border-border-button bg-bg-base rounded-2xl px-4 py-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       style={{ minHeight: '44px', maxHeight: '120px' }}
                       disabled={hasError || sendLoading}
                     />

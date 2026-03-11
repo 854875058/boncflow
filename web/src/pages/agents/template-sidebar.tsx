@@ -80,7 +80,7 @@ export function SideBar({
   };
 
   return (
-    <aside className="w-[303px] bg-text-title-invert border-r flex flex-col">
+    <aside className="w-[303px] bg-bg-base border-r border-border-button text-text-primary flex flex-col">
       <div className="flex-1 overflow-auto">
         {menuItems.map((section, idx) => (
           <div key={idx}>

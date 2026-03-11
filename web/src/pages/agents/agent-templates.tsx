@@ -120,7 +120,7 @@ export default function AgentTemplates() {
           selected={selectMenuItem}
         ></SideBar>
 
-        <main className="flex-1 bg-text-title-invert/50 h-dvh">
+        <main className="flex-1 bg-bg-title h-dvh text-text-primary">
           <CardContainer className="max-h-[94vh] overflow-auto px-8 pt-8">
             {tempListFilter?.map((x) => {
               return (
