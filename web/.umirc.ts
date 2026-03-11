@@ -10,6 +10,7 @@ export default defineConfig({
   outputPath: 'dist',
   alias: { '@parent': path.resolve(__dirname, '../') },
   npmClient: 'npm',
+  mfsu: false,
   base: '/',
   routes,
   publicPath: '/',
