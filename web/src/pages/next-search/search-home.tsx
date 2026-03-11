@@ -1,6 +1,7 @@
 import { Input } from '@/components/originui/input';
 import Spotlight from '@/components/spotlight';
 import message from '@/components/ui/message';
+import { BrandName } from '@/constants/common';
 import { IUserInfo } from '@/interfaces/database/user-setting';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
@@ -33,7 +34,7 @@ export default function SearchPage({
             'text-4xl font-bold bg-gradient-to-l from-[#40EBE3] to-[#4A51FF] bg-clip-text',
           )}
         >
-          RAGFlow
+          {BrandName}
         </h1>
 
         <div className="rounded-lg  text-primary text-xl sticky flex justify-center w-full transform scale-100 mt-8 p-6 h-[240px] border">

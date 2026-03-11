@@ -1,3 +1,4 @@
+import { BrandName } from '@/constants/common';
 import { Button, Card, Flex, Space, Typography } from 'antd';
 
 import { useTranslate } from '@/hooks/common-hooks';
@@ -12,7 +13,7 @@ const BackendServiceApi = ({ show }: { show(): void }) => {
     <Card
       title={
         <Space size={'large'}>
-          <span>RAGFlow API</span>
+          <span>{BrandName} API</span>
           <Button onClick={show} type="primary">
             {t('apiKey')}
           </Button>

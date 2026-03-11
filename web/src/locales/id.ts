@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   translation: {
     common: {
       indonesia: 'Indonesia',
@@ -106,7 +106,7 @@ export default {
       processDuration: 'Durasi Proses',
       progressMsg: 'Pesan Kemajuan',
       testingDescription:
-        'Lakukan tes pengambilan untuk memeriksa apakah RAGFlow dapat memulihkan konten yang diinginkan untuk LLM. ',
+        'Lakukan tes pengambilan untuk memeriksa apakah BONCFlow dapat memulihkan konten yang diinginkan untuk LLM. ',
       similarityThreshold: 'Similarity threshold',
       similarityThresholdTip:
         'Kami menggunakan skor kesamaan hibrida untuk mengevaluasi jarak antara dua baris teks. Ini adalah kesamaan kata kunci berbobot dan kesamaan kosinus vektor. Jika kesamaan antara kueri dan potongan kurang dari ambang ini, potongan akan disaring. Secara default, ambang batas diatur ke 0,2. Itu berarti hanya potongan dengan skor kemiripan hibrida 20 atau lebih tinggi yang akan diambil.',
@@ -149,13 +149,13 @@ export default {
       changeSpecificCategory: 'Ubah kategori spesifik',
       uploadTitle: 'Klik atau seret file ke area ini untuk mengunggah',
       uploadDescription:
-        'RAGFlow mendukung pengunggahan file secara tunggal atau batch. Untuk RAGFlow yang dideploy secara lokal: batas ukuran total file per unggahan adalah 1GB, dengan batas unggahan batch sebanyak 32 file. Tidak ada batasan jumlah total file per akun. Untuk demo.ragflow.io: batas ukuran total file per unggahan adalah 10MB, dengan setiap file tidak melebihi 10MB dan maksimum 128 file per akun.',
+        'BONCFlow mendukung pengunggahan file secara tunggal atau batch. Untuk BONCFlow yang dideploy secara lokal: batas ukuran total file per unggahan adalah 1GB, dengan batas unggahan batch sebanyak 32 file. Tidak ada batasan jumlah total file per akun. Untuk demo.ragflow.io: batas ukuran total file per unggahan adalah 10MB, dengan setiap file tidak melebihi 10MB dan maksimum 128 file per akun.',
       chunk: 'Potongan',
       bulk: 'Massal',
       cancel: 'Batal',
       rerankModel: 'Model Rerank',
       rerankPlaceholder: 'Silakan pilih',
-      rerankTip: `Opsional. Jika dikosongkan, RAGFlow akan menggunakan kombinasi kesamaan kata kunci berbobot dan kesamaan kosinus vektor berbobot; jika model rerank dipilih, skor reranking berbobot akan menggantikan kesamaan kosinus vektor berbobot. Harap diperhatikan bahwa menggunakan model rerank akan secara signifikan meningkatkan waktu respons sistem. Jika Anda ingin menggunakan model rerank, pastikan menggunakan SaaS reranker; jika Anda lebih memilih model rerank yang dijalankan secara lokal, pastikan memulai RAGFlow dengan docker-compose-gpu.yml.`,
+      rerankTip: `Opsional. Jika dikosongkan, BONCFlow akan menggunakan kombinasi kesamaan kata kunci berbobot dan kesamaan kosinus vektor berbobot; jika model rerank dipilih, skor reranking berbobot akan menggantikan kesamaan kosinus vektor berbobot. Harap diperhatikan bahwa menggunakan model rerank akan secara signifikan meningkatkan waktu respons sistem. Jika Anda ingin menggunakan model rerank, pastikan menggunakan SaaS reranker; jika Anda lebih memilih model rerank yang dijalankan secara lokal, pastikan memulai BONCFlow dengan docker-compose-gpu.yml.`,
       topK: 'Top-K',
       topKTip: `Digunakan bersama dengan Rerank model, pengaturan ini menentukan jumlah potongan teks yang akan dikirim ke model reranking yang ditentukan.`,
       delimiter: `Pemisah untuk segmentasi teks`,
@@ -374,7 +374,7 @@ export default {
       topN: 'Top N',
       topNTip: `Tidak semua potongan yang skor kesamaannya di atas 'ambang kesamaan' akan diberikan ke LLM. LLM hanya dapat melihat potongan 'Top N' ini.`,
       variable: 'Variabel',
-      variableTip: `Digunakan bersama dengan API manajemen asisten obrolan RAGFlow, variabel dapat membantu mengembangkan strategi prompt sistem yang lebih fleksibel. Variabel yang didefinisikan akan digunakan oleh 'Prompt Sistem' sebagai bagian dari prompt untuk LLM. {knowledge} adalah variabel khusus yang dicadangkan, mewakili bagian-bagian yang diperoleh dari basis pengetahuan yang ditentukan, dan semua variabel harus dikelilingi oleh kurung kurawal {} dalam 'Prompt Sistem'. Lihat https://ragflow.io/docs/dev/set_chat_variables untuk detail lebih lanjut.`,
+      variableTip: `Digunakan bersama dengan API manajemen asisten obrolan BONCFlow, variabel dapat membantu mengembangkan strategi prompt sistem yang lebih fleksibel. Variabel yang didefinisikan akan digunakan oleh 'Prompt Sistem' sebagai bagian dari prompt untuk LLM. {knowledge} adalah variabel khusus yang dicadangkan, mewakili bagian-bagian yang diperoleh dari basis pengetahuan yang ditentukan, dan semua variabel harus dikelilingi oleh kurung kurawal {} dalam 'Prompt Sistem'. Lihat https://ragflow.io/docs/dev/set_chat_variables untuk detail lebih lanjut.`,
       add: 'Tambah',
       key: 'Kunci',
       optional: 'Opsional',
@@ -530,7 +530,7 @@ export default {
         'Model LLM obrolan default yang akan digunakan semua basis pengetahuan baru yang dibuat.',
       embeddingModel: 'Model Embedding',
       embeddingModelTip:
-        'Model embedding default untuk setiap basis pengetahuan baru yang dibuat. Jika Anda tidak dapat menemukan model embedding dari dropdown, periksa apakah Anda menggunakan RAGFlow slim edition (yang tidak menyertakan model embedding) atau periksa https://ragflow.io/docs/dev/supported_models untuk melihat apakah penyedia model Anda mendukung model ini.',
+        'Model embedding default untuk setiap basis pengetahuan baru yang dibuat. Jika Anda tidak dapat menemukan model embedding dari dropdown, periksa apakah Anda menggunakan BONCFlow slim edition (yang tidak menyertakan model embedding) atau periksa https://ragflow.io/docs/dev/supported_models untuk melihat apakah penyedia model Anda mendukung model ini.',
       img2txtModel: 'Model Img2txt',
       img2txtModelTip:
         'Model img2txt default untuk setiap basis pengetahuan yang baru dibuat. Model ini menggambarkan gambar atau video. Jika Anda tidak dapat menemukan model dari menu dropdown, periksa https://ragflow.io/docs/dev/supported_models untuk melihat apakah penyedia model Anda mendukung model ini.',
@@ -697,7 +697,7 @@ export default {
       directory: 'Direktori',
       uploadTitle: 'Klik atau seret file ke area ini untuk mengunggah',
       uploadDescription:
-        'RAGFlow mendukung pengunggahan file secara tunggal atau batch. Untuk RAGFlow yang dideploy secara lokal: batas ukuran total file per unggahan adalah 1GB, dengan batas unggahan batch sebanyak 32 file. Tidak ada batasan jumlah total file per akun. Untuk demo.ragflow.io: batas ukuran total file per unggahan adalah 10MB, dengan setiap file tidak melebihi 10MB dan maksimum 128 file per akun.',
+        'BONCFlow mendukung pengunggahan file secara tunggal atau batch. Untuk BONCFlow yang dideploy secara lokal: batas ukuran total file per unggahan adalah 1GB, dengan batas unggahan batch sebanyak 32 file. Tidak ada batasan jumlah total file per akun. Untuk demo.ragflow.io: batas ukuran total file per unggahan adalah 10MB, dengan setiap file tidak melebihi 10MB dan maksimum 128 file per akun.',
       local: 'Unggahan lokal',
       s3: 'Unggahan S3',
       preview: 'Pratinjau',
@@ -1109,3 +1109,6 @@ export default {
     },
   },
 };
+
+
+

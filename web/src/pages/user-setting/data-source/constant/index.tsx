@@ -503,7 +503,7 @@ export const DataSourceFormFields = {
       name: 'config.project_key',
       type: FormFieldType.Text,
       required: false,
-      placeholder: 'RAGFlow',
+      placeholder: 'BONCFlow',
       tooltip: t('setting.jiraProjectKeyTip'),
     },
     {

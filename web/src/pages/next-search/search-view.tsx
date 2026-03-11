@@ -6,12 +6,11 @@ import { ImageWithPopover } from '@/components/image';
 import { Input } from '@/components/originui/input';
 import { SkeletonCard } from '@/components/skeleton-card';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { BrandName } from '@/constants/common';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { RAGFlowPagination } from '@/components/ui/ragflow-pagination';
+  RAGFlowPagination,
+} from '@/components/ui/ragflow-pagination';
 import { IReference } from '@/interfaces/database/chat';
 import { cn } from '@/lib/utils';
 import DOMPurify from 'dompurify';
@@ -92,7 +91,7 @@ export default function SearchingView({
             setIsSearching?.(false);
           }}
         >
-          RAGFlow
+          {BrandName}
         </h1>
         <div
           className={cn(

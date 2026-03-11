@@ -212,7 +212,7 @@ async def send_invite_email(to_email, invite_url, tenant_id, inviter):
     # Reuse the generic HTML sender with 'invite' template
     await send_email_html(
         to_email=to_email,
-        subject="RAGFlow Invitation",
+        subject="BONCFlow Invitation",
         template_key="invite",
         email=to_email,
         invite_url=invite_url,

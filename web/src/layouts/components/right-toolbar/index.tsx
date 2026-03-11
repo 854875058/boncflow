@@ -6,7 +6,13 @@ import React, { useCallback, useMemo } from 'react';
 import User from '../user';
 
 import { useTheme } from '@/components/theme-provider';
-import { LanguageList, LanguageMap, ThemeEnum } from '@/constants/common';
+import {
+  BrandDocsUrl,
+  BrandRepositoryUrl,
+  LanguageList,
+  LanguageMap,
+  ThemeEnum,
+} from '@/constants/common';
 import { useChangeLanguage } from '@/hooks/logic-hooks';
 import {
   useFetchUserInfo,
@@ -26,11 +32,11 @@ const Circle = ({ children, ...restProps }: React.PropsWithChildren) => {
 };
 
 const handleGithubCLick = () => {
-  window.open('https://github.com/infiniflow/ragflow', 'target');
+  window.open(BrandRepositoryUrl, 'target');
 };
 
 const handleDocHelpCLick = () => {
-  window.open('https://ragflow.io/docs/dev/category/guides', 'target');
+  window.open(BrandDocsUrl, 'target');
 };
 
 const RightToolBar = () => {

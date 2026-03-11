@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   translation: {
     common: {
       confirm: '确定',
@@ -249,7 +249,7 @@ export default {
       testSetting: '测试设置',
       retrievalTesting: '知识检索测试',
       retrievalTestingDescription:
-        '进行检索测试，检查 RAGFlow 是否能够为大语言模型（LLM）恢复预期的内容。',
+        '进行检索测试，检查 BONCFlow 是否能够为大语言模型（LLM）恢复预期的内容。',
       Parse: '解析',
       dataset: '知识库',
       testing: '检索测试',
@@ -333,7 +333,7 @@ export default {
       close: '关闭',
       rerankModel: 'Rerank模型',
       rerankPlaceholder: '请选择',
-      rerankTip: `非必选项：若不选择 rerank 模型，系统将默认采用关键词相似度与向量余弦相似度相结合的混合查询方式；如果设置了 rerank 模型，则混合查询中的向量相似度部分将被 rerank 打分替代。请注意：采用 rerank 模型会非常耗时。如需选用 rerank 模型，建议使用 SaaS 的 rerank 模型服务；如果你倾向使用本地部署的 rerank 模型，请务必确保你使用 docker-compose-gpu.yml 启动 RAGFlow。`,
+      rerankTip: `非必选项：若不选择 rerank 模型，系统将默认采用关键词相似度与向量余弦相似度相结合的混合查询方式；如果设置了 rerank 模型，则混合查询中的向量相似度部分将被 rerank 打分替代。请注意：采用 rerank 模型会非常耗时。如需选用 rerank 模型，建议使用 SaaS 的 rerank 模型服务；如果你倾向使用本地部署的 rerank 模型，请务必确保你使用 docker-compose-gpu.yml 启动 BONCFlow。`,
       topK: 'Top-K',
       topKTip: `与 Rerank 模型配合使用，用于设置传给 Rerank 模型的文本块数量。`,
       delimiter: `文本分段标识符`,
@@ -515,7 +515,7 @@ export default {
       简历有多种格式，就像一个人的个性一样，但我们经常必须将它们组织成结构化数据，以便于搜索。
       </p><p>
       我们不是将简历分块，而是将简历解析为结构化数据。 作为HR，你可以扔掉所有的简历，
-      您只需与<i>'RAGFlow'</i>交谈即可列出所有符合资格的候选人。
+      您只需与<i>'BONCFlow'</i>交谈即可列出所有符合资格的候选人。
       </p>
         `,
       table: `支持<p><b>XLSX</b>和<b>CSV/TXT</b>格式文件。</p><p>
@@ -967,7 +967,7 @@ General：实体和关系提取提示来自 GitHub - microsoft/graphrag：基于
         '默认的tts模型会被用于在对话过程中请求语音生成时使用。如未显示可选模型，请根据 https://ragflow.io/docs/dev/supported_models 确认你的模型供应商是否提供该模型。',
       embeddingModel: 'Embedding',
       embeddingModelTip:
-        '所有新创建的知识库使用的默认嵌入模型。如未显示可选模型，请检查你是否在使用 RAGFlow slim 版(不含嵌入模型)；或根据 https://ragflow.io/docs/dev/supported_models 确认你的模型供应商是否提供该模型。',
+        '所有新创建的知识库使用的默认嵌入模型。如未显示可选模型，请检查你是否在使用 BONCFlow slim 版(不含嵌入模型)；或根据 https://ragflow.io/docs/dev/supported_models 确认你的模型供应商是否提供该模型。',
       img2txtModel: 'VLM',
       img2txtModelTip:
         '所有新创建的知识库都将使用默认的 img2txt 模型。 它可以描述图片或视频。如未显示可选模型，请根据 https://ragflow.io/docs/dev/supported_models 确认你的模型供应商是否提供该模型。',
@@ -2148,3 +2148,6 @@ Tokenizer 会根据所选方式将内容存储为对应的数据结构。`,
     },
   },
 };
+
+
+

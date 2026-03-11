@@ -149,6 +149,12 @@ export enum FileMimeType {
 }
 
 export const Domain = 'demo.ragflow.io';
+export const BrandName = 'BONCFlow';
+export const BrandRepositoryUrl = 'https://github.com/854875058/boncflow';
+export const BrandDocsUrl =
+  'https://github.com/854875058/boncflow/tree/master/docs/guides';
+export const BrandHttpApiDocUrl =
+  'https://github.com/854875058/boncflow/blob/master/docs/references/http_api_reference.md';
 
 //#region file preview
 export const Images = [
@@ -179,7 +185,7 @@ export const SupportedPreviewDocumentTypes = [...ExceptiveType];
 //#endregion
 
 export enum Platform {
-  RAGFlow = 'RAGFlow',
+  RAGFlow = 'BONCFlow',
   Dify = 'Dify',
   FastGPT = 'FastGPT',
   Coze = 'Coze',

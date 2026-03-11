@@ -17,6 +17,7 @@ import { useMemo, useState } from 'react';
 
 import { useIsDarkTheme } from '@/components/theme-provider';
 import {
+  BrandHttpApiDocUrl,
   LanguageAbbreviation,
   LanguageAbbreviationMap,
 } from '@/constants/common';
@@ -156,8 +157,8 @@ const EmbedModal = ({
       <Link
         href={
           isAgent
-            ? 'https://ragflow.io/docs/dev/http_api_reference#create-session-with-agent'
-            : 'https://ragflow.io/docs/dev/http_api_reference#create-session-with-chat-assistant'
+            ? `${BrandHttpApiDocUrl}#create-session-with-agent`
+            : `${BrandHttpApiDocUrl}#create-session-with-chat-assistant`
         }
         target="_blank"
       >

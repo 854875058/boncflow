@@ -1,4 +1,5 @@
 import { LLMFactory } from '@/constants/llm';
+import { BrandRepositoryUrl } from '@/constants/common';
 import { useTranslate } from '@/hooks/common-hooks';
 import { IModalProps } from '@/interfaces/common';
 import { IAddLlmRequestBody } from '@/interfaces/request/llm';
@@ -25,7 +26,7 @@ const { Option } = Select;
 
 const llmFactoryToUrlMap = {
   [LLMFactory.Ollama]:
-    'https://github.com/infiniflow/ragflow/blob/main/docs/guides/models/deploy_local_llm.mdx',
+    `${BrandRepositoryUrl}/blob/master/docs/guides/models/deploy_local_llm.mdx`,
   [LLMFactory.Xinference]:
     'https://inference.readthedocs.io/en/latest/user_guide',
   [LLMFactory.ModelScope]:
@@ -104,7 +105,7 @@ const OllamaModal = ({
 
   const url =
     llmFactoryToUrlMap[llmFactory as LlmFactory] ||
-    'https://github.com/infiniflow/ragflow/blob/main/docs/guides/models/deploy_local_llm.mdx';
+    `${BrandRepositoryUrl}/blob/master/docs/guides/models/deploy_local_llm.mdx`;
   const optionsMap = {
     [LLMFactory.HuggingFace]: [
       { value: 'embedding', label: 'embedding' },

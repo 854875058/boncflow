@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { SharedFrom } from '@/constants/chat';
 import {
+  BrandHttpApiDocUrl,
   LanguageAbbreviation,
   LanguageAbbreviationMap,
   ThemeEnum,
@@ -292,8 +293,8 @@ function EmbedDialog({
             className="cursor-pointer text-accent-primary inline-block"
             href={
               isAgent
-                ? 'https://ragflow.io/docs/dev/http_api_reference#create-session-with-agent'
-                : 'https://ragflow.io/docs/dev/http_api_reference#create-session-with-chat-assistant'
+                ? `${BrandHttpApiDocUrl}#create-session-with-agent`
+                : `${BrandHttpApiDocUrl}#create-session-with-chat-assistant`
             }
             target="_blank"
             rel="noreferrer"

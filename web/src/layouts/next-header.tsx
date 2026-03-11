@@ -9,7 +9,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Segmented, SegmentedValue } from '@/components/ui/segmented';
-import { LanguageList, LanguageMap, ThemeEnum } from '@/constants/common';
+import {
+  BrandDocsUrl,
+  LanguageList,
+  LanguageMap,
+  ThemeEnum,
+} from '@/constants/common';
 import { useChangeLanguage } from '@/hooks/logic-hooks';
 import { useNavigatePage } from '@/hooks/logic-hooks/navigate-hooks';
 import { useNavigateWithFromState } from '@/hooks/route-hook';
@@ -34,7 +39,7 @@ import { useLocation } from 'umi';
 import { BellButton } from './bell-button';
 import './next-header.css';
 const handleDocHelpCLick = () => {
-  window.open('https://ragflow.io/docs/dev/category/guides', 'target');
+  window.open(BrandDocsUrl, 'target');
 };
 
 const PathMap = {

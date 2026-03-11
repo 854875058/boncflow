@@ -190,9 +190,9 @@ async def chat_completion_openai_like(tenant_id, chat_id):
 
     Example usage:
 
-    curl -X POST https://ragflow_address.com/api/v1/chats_openai/<chat_id>/chat/completions \
+    curl -X POST https://boncflow_address.com/api/v1/chats_openai/<chat_id>/chat/completions \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $RAGFLOW_API_KEY" \
+        -H "Authorization: Bearer $BONCFLOW_API_KEY" \
         -d '{
             "model": "model",
             "messages": [{"role": "user", "content": "Say this is a test!"}],
@@ -204,7 +204,7 @@ async def chat_completion_openai_like(tenant_id, chat_id):
     from openai import OpenAI
 
     model = "model"
-    client = OpenAI(api_key="ragflow-api-key", base_url=f"http://ragflow_address/api/v1/chats_openai/<chat_id>")
+    client = OpenAI(api_key="boncflow-api-key", base_url=f"http://boncflow_address/api/v1/chats_openai/<chat_id>")
 
     stream = True
     reference = True

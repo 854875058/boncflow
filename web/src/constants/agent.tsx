@@ -1,3 +1,4 @@
+import { BrandRepositoryUrl } from './common';
 import { setInitialChatVariableEnabledFieldValue } from '@/utils/chat';
 import { Circle, CircleSlash2 } from 'lucide-react';
 import { ChatVariableEnabledField, variableEnabledFieldMap } from './chat';
@@ -14,7 +15,7 @@ export const CodeTemplateStrMap = {
   [ProgrammingLanguage.Javascript]: `const axios = require('axios');
 async function main({}) {
   try {
-    const response = await axios.get('https://github.com/infiniflow/ragflow');
+    const response = await axios.get('${BrandRepositoryUrl}');
     return 'Body:' + response.data;
   } catch (error) {
     return 'Error:' + error.message;
