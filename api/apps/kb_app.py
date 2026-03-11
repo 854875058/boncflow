@@ -32,7 +32,7 @@ from api.db.services.task_service import TaskService, GRAPH_RAPTOR_FAKE_DOC_ID
 from api.db.services.user_service import TenantService, UserTenantService
 from api.utils.api_utils import get_error_data_result, server_error_response, get_data_error_result, validate_request, not_allowed_parameters, \
     get_request_json
-from api.db import VALID_FILE_TYPES
+from api.db import VALID_FILE_TYPES, FileType
 from api.db.services.knowledgebase_service import KnowledgebaseService
 from api.db.db_models import File
 from api.utils.api_utils import get_json_result
@@ -698,6 +698,55 @@ def trace_raptor():
         return get_error_data_result(message="RAPTOR Task Not Found or Error Occurred")
 
     return get_json_result(data=task.to_dict())
+
+
+@manager.route("/rebuild_multimodal", methods=["POST"])  # noqa: F821
+@login_required
+@validate_request("kb_id")
+async def rebuild_multimodal():
+    req = await get_request_json()
+    kb_id = req.get("kb_id", "")
+    if not kb_id:
+        return get_error_data_result(message='Lack of "KB ID"')
+
+    if not KnowledgebaseService.accessible4deletion(kb_id, current_user.id):
+        return get_json_result(
+            data=False,
+            message='No authorization.',
+            code=RetCode.AUTHENTICATION_ERROR
+        )
+
+    documents, _ = DocumentService.get_by_kb_id(
+        kb_id=kb_id,
+        page_number=0,
+        items_per_page=0,
+        orderby="create_time",
+        desc=False,
+        keywords="",
+        run_status=[],
+        types=[],
+        suffix=[],
+    )
+    runnable_docs = [doc for doc in documents if doc.get("type") != FileType.VIRTUAL.value]
+    if not runnable_docs:
+        return get_error_data_result(message=f"No parseable documents in Knowledgebase {kb_id}")
+
+    running_docs = [doc for doc in runnable_docs if str(doc.get("run")) == "1"]
+    if running_docs:
+        return get_error_data_result(
+            message=f"{len(running_docs)} document(s) are still processing. Please wait until parsing finishes before rebuilding multimodal index."
+        )
+
+    try:
+        queued = await asyncio.to_thread(
+            DocumentService.schedule_rerun,
+            [doc["id"] for doc in runnable_docs],
+            True,
+            True,
+        )
+        return get_json_result(data={"queued_doc_count": queued})
+    except Exception as e:
+        return server_error_response(e)
 
 
 @manager.route("/run_mindmap", methods=["POST"])  # noqa: F821

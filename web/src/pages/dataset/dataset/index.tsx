@@ -2,7 +2,7 @@ import { BulkOperateBar } from '@/components/bulk-operate-bar';
 import { FileUploadDialog } from '@/components/file-upload-dialog';
 import ListFilterBar from '@/components/list-filter-bar';
 import { RenameDialog } from '@/components/rename-dialog';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonLoading } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Modal } from '@/components/ui/modal/modal';
 import { useRowSelection } from '@/hooks/logic-hooks/use-row-selection';
 import { useFetchDocumentList } from '@/hooks/use-document-request';
 import { useFetchKnowledgeBaseConfiguration } from '@/hooks/use-knowledge-request';
-import { Pen, Upload } from 'lucide-react';
+import { Pen, Upload, WandSparkles } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,6 +24,7 @@ import {
 import { ManageMetadataModal } from '../components/metedata/manage-modal';
 import { DatasetTable } from './dataset-table';
 import Generate from './generate-button/generate';
+import { useDatasetGenerate } from './generate-button/hook';
 import { ReparseDialog } from './reparse-dialog';
 import { useBulkOperateDataset } from './use-bulk-operate-dataset';
 import { useCreateEmptyDocument } from './use-create-empty-document';
@@ -57,6 +59,7 @@ export default function Dataset() {
   const { data: dataSetData } = useFetchKnowledgeBaseConfiguration({
     refreshCount,
   });
+  const { rebuildMultimodal, rebuildingMultimodal } = useDatasetGenerate();
   const { filters, onOpenChange, filterGroup } = useSelectDatasetFilters();
 
   const {
@@ -89,9 +92,50 @@ export default function Dataset() {
     rowSelection,
     setRowSelection,
   });
+
+  const handleRebuildMultimodal = () => {
+    Modal.show({
+      visible: true,
+      title: '重建多模态索引',
+      children: (
+        <div className="space-y-3 text-sm text-text-secondary">
+          <p>将重新解析当前知识库中的所有非空文件，并重建图片块的多模态融合向量。</p>
+          <p>原有 chunk 会被删除后重新生成，过程可能持续较长时间。</p>
+          <p>如果当前知识库还有文件正在解析，请等待完成后再执行。</p>
+        </div>
+      ),
+      onCancel: () => Modal.destroy(),
+      footer: (
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => Modal.destroy()}>
+            {t('common.cancel')}
+          </Button>
+          <ButtonLoading
+            loading={rebuildingMultimodal}
+            onClick={async () => {
+              const ret = await rebuildMultimodal();
+              if (ret?.code === 0) {
+                Modal.destroy();
+              }
+            }}
+          >
+            开始重建
+          </ButtonLoading>
+        </div>
+      ),
+    });
+  };
   return (
     <>
-      <div className="absolute top-4 right-5">
+      <div className="absolute top-4 right-5 flex items-center gap-2">
+        <Button
+          variant="transparent"
+          disabled={!(dataSetData?.doc_num > 0)}
+          onClick={handleRebuildMultimodal}
+        >
+          <WandSparkles className="mr-2 size-4" />
+          重建多模态索引
+        </Button>
         <Generate disabled={!(dataSetData.chunk_num > 0)} />
       </div>
       <section className="p-5 min-w-[880px]">

@@ -46,6 +46,7 @@ const {
   traceGraphRag,
   runRaptor,
   traceRaptor,
+  rebuildMultimodal,
   check_embedding,
   kbUpdateMetaData,
   documentUpdateMetaData,
@@ -206,6 +207,10 @@ const methods = {
   traceRaptor: {
     url: traceRaptor,
     method: 'get',
+  },
+  rebuildMultimodal: {
+    url: rebuildMultimodal,
+    method: 'post',
   },
   pipelineRerun: {
     url: api.pipelineRerun,

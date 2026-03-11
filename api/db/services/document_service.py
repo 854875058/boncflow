@@ -1067,6 +1067,52 @@ class DocumentService(CommonService):
             bucket, name = File2DocumentService.get_storage_address(doc_id=doc["id"])
             queue_tasks(doc, bucket, name, 0)
 
+    @classmethod
+    def schedule_rerun(cls, doc_ids: list[str], delete: bool = True, apply_kb: bool = True):
+        from api.db.services.task_service import TaskService
+
+        kb_table_num_map = {}
+        queued = 0
+        for doc_id in doc_ids:
+            tenant_id = cls.get_tenant_id(doc_id)
+            if not tenant_id:
+                raise LookupError("Tenant not found!")
+
+            e, doc = cls.get_by_id(doc_id)
+            if not e:
+                raise LookupError("Document not found!")
+
+            info = {
+                "run": TaskStatus.RUNNING.value,
+                "progress": 0,
+                "progress_msg": "Multimodal rebuild is queued...",
+            }
+            if delete:
+                info["chunk_num"] = 0
+                info["token_num"] = 0
+
+            if delete and str(doc.run) == TaskStatus.DONE.value:
+                cls.clear_chunk_num_when_rerun(doc.id)
+
+            cls.update_by_id(doc_id, info)
+            if delete:
+                TaskService.filter_delete([Task.doc_id == doc_id])
+                if settings.docStoreConn.index_exist(search.index_name(tenant_id), doc.kb_id):
+                    settings.docStoreConn.delete({"doc_id": doc_id}, search.index_name(tenant_id), doc.kb_id)
+
+            if apply_kb:
+                e, kb = KnowledgebaseService.get_by_id(doc.kb_id)
+                if not e:
+                    raise LookupError("Can't find this dataset!")
+                doc.parser_config["enable_metadata"] = kb.parser_config.get("enable_metadata", False)
+                doc.parser_config["metadata"] = kb.parser_config.get("metadata", {})
+                cls.update_parser_config(doc.id, doc.parser_config)
+
+            cls.run(tenant_id, doc.to_dict(), kb_table_num_map)
+            queued += 1
+
+        return queued
+
 
 def queue_raptor_o_graphrag_tasks(sample_doc_id, ty, priority, fake_doc_id="", doc_ids=[]):
     """

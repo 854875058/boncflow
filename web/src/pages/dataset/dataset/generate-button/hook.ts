@@ -17,6 +17,7 @@ export const generateStatus = {
 enum DatasetKey {
   generate = 'generate',
   pauseGenerate = 'pauseGenerate',
+  rebuildMultimodal = 'rebuildMultimodal',
 }
 
 export interface ITraceInfo {
@@ -148,6 +149,28 @@ export const useDatasetGenerate = () => {
       return data;
     },
   });
+  const {
+    data: rebuildData,
+    isPending: rebuildingMultimodal,
+    mutateAsync: rebuildMultimodal,
+  } = useMutation({
+    mutationKey: [DatasetKey.rebuildMultimodal],
+    mutationFn: async () => {
+      const { data } = await kbService.rebuildMultimodal({
+        kb_id: id,
+      });
+      if (data.code === 0) {
+        message.success(t('message.operated'));
+        queryClient.invalidateQueries({
+          queryKey: ['fetchDocumentList'],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['fetchKnowledgeDetail'],
+        });
+      }
+      return data;
+    },
+  });
   // const pauseGenerate = useCallback(() => {
   //   // TODO: pause generate
   //   console.log('pause generate');
@@ -175,5 +198,13 @@ export const useDatasetGenerate = () => {
       return data;
     },
   });
-  return { runGenerate: mutateAsync, pauseGenerate, data, loading };
+  return {
+    runGenerate: mutateAsync,
+    pauseGenerate,
+    rebuildMultimodal,
+    rebuildingMultimodal,
+    rebuildData,
+    data,
+    loading,
+  };
 };
