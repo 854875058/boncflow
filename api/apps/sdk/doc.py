@@ -42,6 +42,7 @@ from rag.app.qa import beAdoc, rmPrefix
 from rag.app.tag import label_question
 from rag.nlp import rag_tokenizer, search
 from rag.prompts.generator import cross_languages, keyword_extraction
+from rag.utils.multimodal_query import prepare_multimodal_query
 from common.string_utils import remove_redundant_spaces
 from common.constants import RetCode, LLMType, ParserType, TaskStatus, FileSource
 from common import settings
@@ -1509,11 +1510,11 @@ async def retrieval_test(tenant_id):
             message='Datasets use different embedding models."',
             code=RetCode.DATA_ERROR,
         )
-    if "question" not in req:
-        return get_error_data_result("`question` is required.")
     page = int(req.get("page", 1))
     size = int(req.get("page_size", 30))
-    question = req["question"]
+    question = (req.get("question") or "").strip()
+    if not question and not req.get("image_base64") and not req.get("video_base64"):
+        return get_error_data_result("`question` or query media is required.")
     doc_ids = req.get("document_ids", [])
     use_kg = req.get("use_kg", False)
     toc_enhance = req.get("toc_enhance", False)
@@ -1546,17 +1547,33 @@ async def retrieval_test(tenant_id):
         if not e:
             return get_error_data_result(message="Dataset not found!")
         embd_mdl = LLMBundle(kb.tenant_id, LLMType.EMBEDDING, llm_name=kb.embd_id)
+        if langs and question:
+            question = await cross_languages(kb.tenant_id, None, question, langs)
+        prepared_query = await prepare_multimodal_query(
+            tenant_id=kb.tenant_id,
+            embedding_model=embd_mdl,
+            question=question,
+            image_base64=req.get("image_base64"),
+            video_base64=req.get("video_base64"),
+            media_filename=req.get("media_filename", ""),
+        )
+        question = prepared_query.question
+        query_vector = prepared_query.query_vector
+        if not question and not query_vector:
+            return get_result(
+                message="Unable to build a multimodal query. Check embedding or vision model settings.",
+                code=RetCode.DATA_ERROR,
+            )
 
         rerank_mdl = None
         if req.get("rerank_id"):
             rerank_mdl = LLMBundle(kb.tenant_id, LLMType.RERANK, llm_name=req["rerank_id"])
 
-        if langs:
-            question = await cross_languages(kb.tenant_id, None, question, langs)
-
-        if req.get("keyword", False):
+        if req.get("keyword", False) and question:
             chat_mdl = LLMBundle(kb.tenant_id, LLMType.CHAT)
             question += await keyword_extraction(chat_mdl, question)
+
+        labels = label_question(question, kbs) if question else {}
 
         ranks = settings.retriever.retrieval(
             question,
@@ -1571,14 +1588,15 @@ async def retrieval_test(tenant_id):
             doc_ids,
             rerank_mdl=rerank_mdl,
             highlight=highlight,
-            rank_feature=label_question(question, kbs),
+            rank_feature=labels,
+            query_vector=query_vector,
         )
-        if toc_enhance:
+        if toc_enhance and question:
             chat_mdl = LLMBundle(kb.tenant_id, LLMType.CHAT)
             cks = settings.retriever.retrieval_by_toc(question, ranks["chunks"], tenant_ids, chat_mdl, size)
             if cks:
                 ranks["chunks"] = cks
-        if use_kg:
+        if use_kg and question:
             ck = settings.kg_retriever.retrieval(question, [k.tenant_id for k in kbs], kb_ids, embd_mdl, LLMBundle(kb.tenant_id, LLMType.CHAT))
             if ck["content_with_weight"]:
                 ranks["chunks"].insert(0, ck)
@@ -1604,6 +1622,10 @@ async def retrieval_test(tenant_id):
                 rename_chunk[new_key] = value
             renamed_chunks.append(rename_chunk)
         ranks["chunks"] = renamed_chunks
+        ranks["labels"] = labels
+        ranks["query_mode"] = prepared_query.mode
+        ranks["resolved_question"] = question
+        ranks["media_summary"] = prepared_query.media_summary
         return get_result(data=ranks)
     except Exception as e:
         if str(e).find("not_found") > 0:

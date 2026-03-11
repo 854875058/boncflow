@@ -33,6 +33,7 @@ from rag.app.qa import beAdoc, rmPrefix
 from rag.app.tag import label_question
 from rag.nlp import rag_tokenizer, search
 from rag.prompts.generator import cross_languages, keyword_extraction
+from rag.utils.multimodal_query import prepare_multimodal_query
 from common.string_utils import remove_redundant_spaces
 from common.constants import RetCode, LLMType, ParserType, PAGERANK_FLD
 from common import settings
@@ -302,18 +303,23 @@ async def create():
 
 @manager.route('/retrieval_test', methods=['POST'])  # noqa: F821
 @login_required
-@validate_request("kb_id", "question")
 async def retrieval_test():
     req = await get_request_json()
     page = int(req.get("page", 1))
     size = int(req.get("size", 30))
-    question = req["question"]
+    question = (req.get("question") or "").strip()
     kb_ids = req["kb_id"]
     if isinstance(kb_ids, str):
         kb_ids = [kb_ids]
     if not kb_ids:
         return get_json_result(data=False, message='Please specify dataset firstly.',
                                code=RetCode.DATA_ERROR)
+    if not question and not req.get("image_base64") and not req.get("video_base64"):
+        return get_json_result(
+            data=False,
+            message='Please provide text, image, or video for retrieval.',
+            code=RetCode.ARGUMENT_ERROR,
+        )
 
     doc_ids = req.get("doc_ids", [])
     use_kg = req.get("use_kg", False)
@@ -357,30 +363,46 @@ async def retrieval_test():
         if not e:
             return get_data_error_result(message="Knowledgebase not found!")
 
-        _question = question
-        if langs:
-            _question = await cross_languages(kb.tenant_id, None, _question, langs)
-
         embd_mdl = LLMBundle(kb.tenant_id, LLMType.EMBEDDING.value, llm_name=kb.embd_id)
+        _question = question
+        if langs and _question:
+            _question = await cross_languages(kb.tenant_id, None, _question, langs)
+        prepared_query = await prepare_multimodal_query(
+            tenant_id=kb.tenant_id,
+            embedding_model=embd_mdl,
+            question=_question,
+            image_base64=req.get("image_base64"),
+            video_base64=req.get("video_base64"),
+            media_filename=req.get("media_filename", ""),
+        )
+        _question = prepared_query.question
+        query_vector = prepared_query.query_vector
+        if not _question and not query_vector:
+            return get_json_result(
+                data=False,
+                message='Unable to build a multimodal query. Check embedding or vision model settings.',
+                code=RetCode.DATA_ERROR,
+            )
 
         rerank_mdl = None
         if req.get("rerank_id"):
             rerank_mdl = LLMBundle(kb.tenant_id, LLMType.RERANK.value, llm_name=req["rerank_id"])
 
-        if req.get("keyword", False):
+        if req.get("keyword", False) and _question:
             chat_mdl = LLMBundle(kb.tenant_id, LLMType.CHAT)
             _question += await keyword_extraction(chat_mdl, _question)
 
-        labels = label_question(_question, [kb])
+        labels = label_question(_question, [kb]) if _question else {}
         ranks = settings.retriever.retrieval(_question, embd_mdl, tenant_ids, kb_ids, page, size,
                                float(req.get("similarity_threshold", 0.0)),
                                float(req.get("vector_similarity_weight", 0.3)),
                                top,
                                local_doc_ids, rerank_mdl=rerank_mdl,
                                              highlight=req.get("highlight", False),
-                               rank_feature=labels
+                               rank_feature=labels,
+                               query_vector=query_vector,
                                )
-        if use_kg:
+        if use_kg and _question:
             ck = settings.kg_retriever.retrieval(_question,
                                                    tenant_ids,
                                                    kb_ids,
@@ -393,6 +415,9 @@ async def retrieval_test():
         for c in ranks["chunks"]:
             c.pop("vector", None)
         ranks["labels"] = labels
+        ranks["query_mode"] = prepared_query.mode
+        ranks["resolved_question"] = _question
+        ranks["media_summary"] = prepared_query.media_summary
 
         return get_json_result(data=ranks)
 

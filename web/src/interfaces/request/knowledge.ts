@@ -1,5 +1,5 @@
 export interface ITestRetrievalRequestBody {
-  question: string;
+  question?: string;
   similarity_threshold: number;
   vector_similarity_weight: number;
   rerank_id?: string;
@@ -7,6 +7,9 @@ export interface ITestRetrievalRequestBody {
   use_kg?: boolean;
   highlight?: boolean;
   kb_id?: string[];
+  image_base64?: string;
+  video_base64?: string;
+  media_filename?: string;
   meta_data_filter?: {
     logic?: string;
     method?: string;

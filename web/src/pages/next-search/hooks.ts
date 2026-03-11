@@ -10,6 +10,7 @@ import {
   useKnowledgeBaseId,
   useSelectTestingResult,
 } from '@/hooks/use-knowledge-request';
+import { IQueryMediaValue } from '@/components/query-media-upload';
 import { ResponsePostType } from '@/interfaces/database/base';
 import { IAnswer } from '@/interfaces/database/chat';
 import { ITestingResult } from '@/interfaces/database/knowledge';
@@ -322,19 +323,28 @@ export const useSendQuestion = (
   const [searchStr, setSearchStr] = useState<string>('');
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
+  const [queryMedia, setQueryMedia] = useState<IQueryMediaValue | null>(null);
 
   const { pagination, setPagination } = useGetPaginationWithRouter();
+  const hasQueryMedia = Boolean(queryMedia?.base64);
 
   const sendQuestion = useCallback(
-    (question: string, enableAI: boolean = true) => {
+    (
+      question: string,
+      enableAI: boolean = true,
+      nextQueryMedia?: IQueryMediaValue | null,
+    ) => {
       const q = trim(question);
-      if (isEmpty(q)) return;
+      const activeQueryMedia = nextQueryMedia ?? queryMedia;
+      if (isEmpty(q) && !activeQueryMedia?.base64) return;
       setPagination({ page: 1 });
       setIsFirstRender(false);
       setCurrentAnswer({} as IAnswer);
-      if (enableAI) {
+      if (enableAI && q) {
         setSendingLoading(true);
         send({ kb_ids: kbIds, question: q, tenantId, search_id: searchId });
+      } else {
+        setSendingLoading(false);
       }
       testChunk({
         kb_id: kbIds,
@@ -343,9 +353,14 @@ export const useSendQuestion = (
         page: 1,
         size: pagination.pageSize,
         search_id: searchId,
+        image_base64:
+          activeQueryMedia?.kind === 'image' ? activeQueryMedia.base64 : '',
+        video_base64:
+          activeQueryMedia?.kind === 'video' ? activeQueryMedia.base64 : '',
+        media_filename: activeQueryMedia?.fileName || '',
       });
 
-      if (related_search) {
+      if (related_search && q) {
         fetchRelatedQuestions(q);
       }
     },
@@ -359,6 +374,7 @@ export const useSendQuestion = (
       tenantId,
       searchId,
       related_search,
+      queryMedia,
     ],
   );
 
@@ -381,7 +397,7 @@ export const useSendQuestion = (
   const handleTestChunk = useCallback(
     (documentIds: string[], page: number = 1, size: number = 10) => {
       const q = trim(searchStr);
-      if (sendingLoading || isEmpty(q)) return;
+      if (sendingLoading || (isEmpty(q) && !hasQueryMedia)) return;
 
       testChunk({
         kb_id: kbIds,
@@ -391,6 +407,9 @@ export const useSendQuestion = (
         page,
         size,
         search_id: searchId,
+        image_base64: queryMedia?.kind === 'image' ? queryMedia.base64 : '',
+        video_base64: queryMedia?.kind === 'video' ? queryMedia.base64 : '',
+        media_filename: queryMedia?.fileName || '',
       });
 
       testChunkAll({
@@ -401,6 +420,9 @@ export const useSendQuestion = (
         page,
         size,
         search_id: searchId,
+        image_base64: queryMedia?.kind === 'image' ? queryMedia.base64 : '',
+        video_base64: queryMedia?.kind === 'video' ? queryMedia.base64 : '',
+        media_filename: queryMedia?.fileName || '',
       });
     },
     [
@@ -411,6 +433,8 @@ export const useSendQuestion = (
       selectedDocumentIds,
       testChunkAll,
       searchId,
+      queryMedia,
+      hasQueryMedia,
     ],
   );
 
@@ -438,9 +462,12 @@ export const useSendQuestion = (
     relatedQuestions: relatedQuestions?.slice(0, 5) ?? [],
     searchStr,
     setSearchStr,
+    queryMedia,
+    setQueryMedia,
     isFirstRender,
     selectedDocumentIds,
-    isSearchStrEmpty: isEmpty(trim(searchStr)),
+    hasSearchText: !isEmpty(trim(searchStr)),
+    isSearchStrEmpty: isEmpty(trim(searchStr)) && !hasQueryMedia,
     stopOutputMessage,
   };
 };
@@ -464,7 +491,10 @@ export const useSearching = ({
     isFirstRender,
     selectedDocumentIds,
     isSearchStrEmpty,
+    hasSearchText,
     setSearchStr,
+    queryMedia,
+    setQueryMedia,
     stopOutputMessage,
   } = useSendQuestion(
     searchData.search_config.kb_ids,
@@ -544,7 +574,10 @@ export const useSearching = ({
     isFirstRender,
     selectedDocumentIds,
     isSearchStrEmpty,
+    hasSearchText,
     setSearchStr,
+    queryMedia,
+    setQueryMedia,
     stopOutputMessage,
 
     visible,

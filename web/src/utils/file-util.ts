@@ -50,6 +50,15 @@ export const transformFile2Base64 = (
   });
 };
 
+export const transformFile2DataUrl = (val: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(val);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+  });
+};
+
 export const transformBase64ToFile = (
   dataUrl: string,
   filename: string = 'file',

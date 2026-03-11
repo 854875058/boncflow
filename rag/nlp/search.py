@@ -50,8 +50,10 @@ class Dealer:
         keywords: list[str] | None = None
         group_docs: list[list] | None = None
 
-    def get_vector(self, txt, emb_mdl, topk=10, similarity=0.1):
-        qv, _ = emb_mdl.encode_queries(txt)
+    def get_vector(self, txt, emb_mdl, topk=10, similarity=0.1, query_vector=None):
+        qv = query_vector
+        if qv is None:
+            qv, _ = emb_mdl.encode_queries(txt)
         shape = np.array(qv).shape
         if len(shape) > 1:
             raise Exception(
@@ -96,9 +98,11 @@ class Dealer:
                        "available_int", "content_with_weight", "mom_id", PAGERANK_FLD, TAG_FLD])
         kwds = set([])
 
-        qst = req.get("question", "")
+        qst = req.get("question", "") or ""
+        query_vector = req.get("query_vector")
+        has_query_vector = isinstance(query_vector, (list, tuple, np.ndarray)) and len(query_vector) > 0
         q_vec = []
-        if not qst:
+        if not qst and not has_query_vector:
             if req.get("sort"):
                 orderBy.asc("page_num_int")
                 orderBy.asc("top_int")
@@ -112,21 +116,32 @@ class Dealer:
                 highlightFields = []
             elif isinstance(highlight, list):
                 highlightFields = highlight
-            matchText, keywords = self.qryr.question(qst, min_match=0.3)
+            matchText, keywords = (None, [])
+            if qst:
+                matchText, keywords = self.qryr.question(qst, min_match=0.3)
             if emb_mdl is None:
-                matchExprs = [matchText]
+                matchExprs = [matchText] if matchText is not None else []
                 res = self.dataStore.search(src, highlightFields, filters, matchExprs, orderBy, offset, limit,
                                             idx_names, kb_ids, rank_feature=rank_feature)
                 total = self.dataStore.get_total(res)
                 logging.debug("Dealer.search TOTAL: {}".format(total))
             else:
-                matchDense = self.get_vector(qst, emb_mdl, topk, req.get("similarity", 0.1))
+                matchDense = self.get_vector(
+                    qst,
+                    emb_mdl,
+                    topk,
+                    req.get("similarity", 0.1),
+                    query_vector=query_vector,
+                )
                 q_vec = matchDense.embedding_data
                 if not settings.DOC_ENGINE_INFINITY:
                     src.append(f"q_{len(q_vec)}_vec")
 
-                fusionExpr = FusionExpr("weighted_sum", topk, {"weights": "0.05,0.95"})
-                matchExprs = [matchText, matchDense, fusionExpr]
+                if matchText is not None:
+                    fusionExpr = FusionExpr("weighted_sum", topk, {"weights": "0.05,0.95"})
+                    matchExprs = [matchText, matchDense, fusionExpr]
+                else:
+                    matchExprs = [matchDense]
 
                 res = self.dataStore.search(src, highlightFields, filters, matchExprs, orderBy, offset, limit,
                                             idx_names, kb_ids, rank_feature=rank_feature)
@@ -134,7 +149,7 @@ class Dealer:
                 logging.debug("Dealer.search TOTAL: {}".format(total))
 
                 # If result is empty, try again with lower min_match
-                if total == 0:
+                if total == 0 and matchText is not None:
                     if filters.get("doc_id"):
                         res = self.dataStore.search(src, [], filters, [], orderBy, offset, limit, idx_names, kb_ids)
                         total = self.dataStore.get_total(res)
@@ -376,9 +391,11 @@ class Dealer:
             rerank_mdl=None,
             highlight=False,
             rank_feature: dict | None = {PAGERANK_FLD: 10},
+            query_vector=None,
     ):
         ranks = {"total": 0, "chunks": [], "doc_aggs": {}}
-        if not question:
+        has_query_vector = isinstance(query_vector, (list, tuple, np.ndarray)) and len(query_vector) > 0
+        if not question and not has_query_vector:
             return ranks
 
         # Ensure RERANK_LIMIT is multiple of page_size
@@ -394,6 +411,8 @@ class Dealer:
             "similarity": similarity_threshold,
             "available_int": 1,
         }
+        if has_query_vector:
+            req["query_vector"] = query_vector
 
         if isinstance(tenant_ids, str):
             tenant_ids = tenant_ids.split(",")
@@ -401,7 +420,7 @@ class Dealer:
         sres = self.search(req, [index_name(tid) for tid in tenant_ids], kb_ids, embd_mdl, highlight,
                            rank_feature=rank_feature)
 
-        if rerank_mdl and sres.total > 0:
+        if rerank_mdl and sres.total > 0 and question:
             sim, tsim, vsim = self.rerank_by_model(
                 rerank_mdl,
                 sres,

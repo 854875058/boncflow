@@ -11,6 +11,7 @@ const excludedFields: Array<string | RegExp> = [
   'img2txt_id',
   'mcpServers',
   'image_base64',
+  'video_base64',
 ];
 
 const isExcludedField = (key: string) => {

@@ -1258,6 +1258,13 @@
       id: 'ID',
       copySuccess: '複製成功',
       welcomeBack: '歡迎回來',
+      uploadMedia: '上傳圖片/影片',
+      mediaHint: '可選，上傳一張圖片或一個影片進行多模態檢索',
+      selectedImage: '已選擇圖片',
+      selectedVideo: '已選擇影片',
+      clearMedia: '清除媒體',
+      mediaTypeError: '僅支援圖片或影片文件',
+      mediaUploadError: '媒體文件處理失敗',
     },
   },
 };

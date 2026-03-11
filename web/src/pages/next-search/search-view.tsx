@@ -4,6 +4,7 @@ import HighLightMarkdown from '@/components/highlight-markdown';
 import { FileIcon } from '@/components/icon-font';
 import { ImageWithPopover } from '@/components/image';
 import { Input } from '@/components/originui/input';
+import { QueryMediaUpload } from '@/components/query-media-upload';
 import { SkeletonCard } from '@/components/skeleton-card';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -37,7 +38,10 @@ export default function SearchingView({
   isFirstRender,
   selectedDocumentIds,
   isSearchStrEmpty,
+  hasSearchText,
   searchStr,
+  queryMedia,
+  setQueryMedia,
   stopOutputMessage,
   visible,
   hideModal,
@@ -123,6 +127,7 @@ export default function SearchingView({
                   onClick={() => {
                     setSearchtext('');
                     handleClickRelatedQuestion('');
+                    setQueryMedia(null);
                   }}
                 />
                 <span className="text-text-secondary opacity-20 ml-4">|</span>
@@ -146,13 +151,21 @@ export default function SearchingView({
                 </button>
               </div>
             </div>
+            <QueryMediaUpload
+              value={queryMedia}
+              onChange={setQueryMedia}
+              disabled={sendingLoading}
+              className="mt-3 w-full"
+            />
           </div>
           {/* search body */}
           <div
             className="w-full mt-5 overflow-auto scrollbar-none "
             style={{ height: 'calc(100vh - 250px)' }}
           >
-            {searchData.search_config.summary && !isSearchStrEmpty && (
+            {searchData.search_config.summary &&
+              hasSearchText &&
+              !isFirstRender && (
               <>
                 <div className="flex justify-start items-start text-text-primary text-2xl">
                   {t('search.AISummary')}
@@ -177,7 +190,7 @@ export default function SearchingView({
               </>
             )}
             {/* retrieval documents */}
-            {!isSearchStrEmpty && !sendingLoading && (
+            {!isFirstRender && !isSearchStrEmpty && !sendingLoading && (
               <>
                 <div className=" mt-3 w-44 ">
                   <RetrievalDocuments
@@ -273,7 +286,8 @@ export default function SearchingView({
                   </>
                 )}
             </div>
-            {!isSearchStrEmpty &&
+            {!isFirstRender &&
+              !isSearchStrEmpty &&
               !retrievalLoading &&
               !answer.answer &&
               !sendingLoading &&
