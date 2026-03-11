@@ -25,7 +25,7 @@ export function Datasets() {
   const { navigateToDatasetList } = useNavigatePage();
 
   return (
-    <section style={{background:'#fff',padding:'40px 20px',borderRadius:'4px'}}>
+    <section className="bg-bg-base px-5 py-10 rounded text-text-primary">
       <h2 className="text-2xl font-semibold mb-6 flex gap-2.5 items-center">
         {/* <IconFont name="data" className="size-8"></IconFont> */}
         <HomeIcon name="datasets" width={'47'} height={'47'} />

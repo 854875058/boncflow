@@ -58,7 +58,7 @@ export function Applications() {
   };
 
   return (
-    <section className="mt-12" style={{background:'#fff',padding:'55px 20px',borderRadius:'4px'}}>
+    <section className="mt-12 bg-bg-base px-5 py-[55px] rounded text-text-primary">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-2xl font-semibold flex gap-2.5 items-center">
           <HomeIcon

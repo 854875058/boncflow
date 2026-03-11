@@ -28,16 +28,20 @@
   font-style: normal;
   font-weight: 600;
   line-height: 20px;
+  color: rgb(var(--text-primary) / 1);
 }
 
 .radioGroup {
+  & a {
+    color: inherit;
+  }
   & label {
     height: 40px;
     line-height: 40px;
     border: 0 !important;
-    background-color: rgba(249, 249, 249, 1);
+    background-color: var(--bg-card);
     font-weight: @fontWeight700;
-    color: rgba(29, 25, 41, 1);
+    color: rgb(var(--text-primary) / 1);
     &::before {
       display: none !important;
     }
@@ -71,13 +75,16 @@
 }
 
 .radioGroupDark {
+  & a {
+    color: inherit;
+  }
   & label {
     height: 40px;
     line-height: 40px;
     border: 0 !important;
-    background-color: rgba(249, 249, 249, 0.25);
+    background-color: var(--bg-card);
     font-weight: @fontWeight700;
-    color: rgba(29, 25, 41, 1);
+    color: rgb(var(--text-primary) / 1);
     &::before {
       display: none !important;
     }
