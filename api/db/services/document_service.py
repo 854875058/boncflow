@@ -23,6 +23,7 @@ from copy import deepcopy
 from datetime import datetime
 from io import BytesIO
 
+import numpy as np
 import xxhash
 from peewee import fn, Case, JOIN
 
@@ -38,6 +39,7 @@ from common.misc_utils import get_uuid
 from common.time_utils import current_timestamp, get_format_time
 from common.constants import LLMType, ParserType, StatusEnum, TaskStatus, SVR_CONSUMER_GROUP_NAME
 from rag.nlp import rag_tokenizer, search
+from rag.utils.multimodal_embedding import fuse_chunk_image_vectors
 from rag.utils.redis_conn import REDIS_CONN
 from common.doc_store.doc_store_base import OrderByExpr
 from common import settings
@@ -1165,8 +1167,8 @@ def doc_upload_and_parse(conversation_id, file_objs, user_id):
         }
         threads.append(exe.submit(FACTORY.get(d["parser_id"], naive).chunk, d["name"], blob, **kwargs))
 
+    docs = []
     for (docinfo, _), th in zip(files, threads):
-        docs = []
         doc = {
             "doc_id": docinfo["id"],
             "kb_id": [kb.id]
@@ -1198,14 +1200,26 @@ def doc_upload_and_parse(conversation_id, file_objs, user_id):
     token_counts = {id: 0 for id in docids}
     es_bulk_size = 64
 
-    def embedding(doc_id, cnts, batch_size=16):
+    def embedding(doc_id, cks, batch_size=16):
         nonlocal embd_mdl, chunk_counts, token_counts
-        vectors = []
+        vectors = np.array([])
+        cnts = [c["content_with_weight"] for c in cks]
         for i in range(0, len(cnts), batch_size):
             vts, c = embd_mdl.encode(cnts[i: i + batch_size])
-            vectors.extend(vts.tolist())
+            if len(vectors) == 0:
+                vectors = vts
+            else:
+                vectors = np.concatenate((vectors, vts), axis=0)
             chunk_counts[doc_id] += len(cnts[i:i + batch_size])
             token_counts[doc_id] += c
+
+        vectors, image_tokens, _ = fuse_chunk_image_vectors(
+            embd_mdl,
+            cks,
+            vectors,
+            storage_get_func=settings.STORAGE_IMPL.get,
+        )
+        token_counts[doc_id] += image_tokens
         return vectors
 
     idxnm = search.index_name(kb.tenant_id)
@@ -1237,10 +1251,10 @@ def doc_upload_and_parse(conversation_id, file_objs, user_id):
             except Exception:
                 logging.exception("Mind map generation error")
 
-        vectors = embedding(doc_id, [c["content_with_weight"] for c in cks])
+        vectors = embedding(doc_id, cks)
         assert len(cks) == len(vectors)
         for i, d in enumerate(cks):
-            v = vectors[i]
+            v = vectors[i].tolist() if hasattr(vectors[i], "tolist") else vectors[i]
             d["q_%d_vec" % len(v)] = v
         for b in range(0, len(cks), es_bulk_size):
             if try_create_idx:

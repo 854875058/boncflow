@@ -27,6 +27,7 @@ from common.connection_utils import timeout
 from rag.flow.base import ProcessBase, ProcessParamBase
 from rag.flow.tokenizer.schema import TokenizerFromUpstream
 from rag.nlp import rag_tokenizer
+from rag.utils.multimodal_embedding import fuse_chunk_image_vectors
 from common import settings
 from rag.svr.task_executor import embed_limiter
 from common.token_utils import truncate
@@ -94,6 +95,8 @@ class Tokenizer(ProcessBase):
                 self.callback(i * 1.0 / len(texts) / parts / settings.EMBEDDING_BATCH_SIZE + 0.5 * (parts - 1))
 
         cnts = cnts_
+        cnts, image_tokens, _ = fuse_chunk_image_vectors(embedding_model, chunks, cnts)
+        token_count += image_tokens
         title_w = float(self._param.filename_embd_weight)
         vects = (title_w * tts + (1 - title_w) * cnts) if len(tts) == len(cnts) else cnts
 

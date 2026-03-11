@@ -64,6 +64,7 @@ from rag.nlp import search, rag_tokenizer, add_positions
 from rag.raptor import RecursiveAbstractiveProcessing4TreeOrganizedRetrieval as Raptor
 from common.token_utils import num_tokens_from_string, truncate
 from rag.utils.redis_conn import REDIS_CONN, RedisDistributedLock
+from rag.utils.multimodal_embedding import fuse_chunk_image_vectors
 from graphrag.utils import chat_limiter
 from common.signal_utils import start_tracemalloc_and_snapshot, stop_tracemalloc
 from common.exceptions import TaskCanceledException
@@ -644,6 +645,11 @@ async def run_dataflow(task: dict):
                 prog += delta
                 if i % (len(texts) // settings.EMBEDDING_BATCH_SIZE / 100 + 1) == 1:
                     set_progress(task_id, prog=prog, msg=f"{i + 1} / {len(texts) // settings.EMBEDDING_BATCH_SIZE}")
+
+            vects, image_tokens, fused_indices = fuse_chunk_image_vectors(embedding_model, chunks, vects)
+            embedding_token_consumption += image_tokens
+            if fused_indices:
+                set_progress(task_id, prog=min(prog + delta, 0.99), msg=f"Multimodal fusion on {len(fused_indices)} chunks")
 
             assert len(vects) == len(chunks)
             for i, ck in enumerate(chunks):

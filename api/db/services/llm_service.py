@@ -132,6 +132,36 @@ class LLMBundle(LLM4Tenant):
 
         return emd, used_tokens
 
+    def supports_image_embedding(self) -> bool:
+        checker = getattr(self.mdl, "supports_image_documents", None)
+        if not callable(checker):
+            return False
+        try:
+            return bool(checker())
+        except Exception:
+            logging.exception("LLMBundle.supports_image_embedding failed for %s", self.llm_name)
+            return False
+
+    def encode_image_documents(self, images: list[bytes]):
+        if self.langfuse:
+            generation = self.langfuse.start_generation(
+                trace_context=self.trace_context,
+                name="encode_image_documents",
+                model=self.llm_name,
+                input={"count": len(images)},
+            )
+
+        embeddings, used_tokens = self.mdl.encode_image_documents(images)
+        llm_name = getattr(self, "llm_name", None)
+        if not TenantLLMService.increase_usage(self.tenant_id, self.llm_type, used_tokens, llm_name):
+            logging.error("LLMBundle.encode_image_documents can't update token usage for <tenant redacted>/EMBEDDING used_tokens: {}".format(used_tokens))
+
+        if self.langfuse:
+            generation.update(usage_details={"total_tokens": used_tokens})
+            generation.end()
+
+        return embeddings, used_tokens
+
     def similarity(self, query: str, texts: list):
         if self.langfuse:
             generation = self.langfuse.start_generation(trace_context=self.trace_context, name="similarity", model=self.llm_name, input={"query": query, "texts": texts})
